@@ -1,0 +1,316 @@
+@startuml
+title DER transaccional - Gestión de Bicicletería
+hide circle
+skinparam linetype ortho
+skinparam shadowing false
+skinparam entity {
+  BackgroundColor #FEFEFE
+  BorderColor #375A7F
+}
+
+package "Ubicación y personas" {
+
+  entity "Localidad" as Localidad {
+    * localidad_id : int <<PK>>
+    --
+    nombre_localidad : varchar(255)
+    provincia : varchar(40)
+  }
+
+  entity "Local" as Local {
+    * local_id : int <<PK>>
+    --
+    nombre_local : varchar(255)
+    telefono_local : varchar(255)
+    email_local : varchar(255)
+    direccion_local : varchar(255)
+    localidad_id : int <<FK>>
+  }
+
+  entity "Cliente" as Cliente {
+    * cliente_id : int <<PK>>
+    --
+    nombre_cliente : varchar(255)
+    apellido_cliente : varchar(255)
+    dni_cliente : varchar(255) <<AK>>
+    telefono_cliente : varchar(255)
+    email_cliente : varchar(255)
+    direccion_cliente : varchar(255)
+    fecha_nacimiento_cliente : datetime
+    localidad_id : int <<FK>>
+  }
+
+  entity "Empleado" as Empleado {
+    * empleado_id : int <<PK>>
+    --
+    nombre_empleado : varchar(255)
+    apellido_empleado : varchar(255)
+    dni_empleado : varchar(255) <<AK>>
+    puesto_empleado : varchar(255)
+    fecha_ingreso_empleado : datetime
+    telefono_empleado : varchar(255)
+    email_empleado : varchar(255)
+    domicilio_empleado : varchar(255)
+    fecha_nac_empleado : datetime
+    localidad_id : int <<FK>>
+    local_id : int <<FK>>
+  }
+
+  entity "Proveedor" as Proveedor {
+    * proveedor_id : int <<PK>>
+    --
+    razon_social_proveedor : varchar(255)
+    cuit_proveedor : varchar(255) <<AK>>
+    telefono_proveedor : varchar(255)
+    email_proveedor : varchar(255)
+    direccion_proveedor : varchar(255)
+    localidad_id : int <<FK>>
+  }
+}
+
+package "Catálogos" {
+  entity "FormaPago" as FormaPago {
+    * forma_pago_id : int <<PK>>
+    --
+    forma_pago : varchar(20)
+  }
+
+  entity "TipoProducto" as TipoProducto {
+    * tipo_producto_id : int <<PK>>
+    --
+    tipo_producto : varchar(255)
+  }
+
+  entity "Marca" as Marca {
+    * marca_id : int <<PK>>
+    --
+    marca : varchar(255)
+  }
+
+  entity "CategoriaBicicleta" as CategoriaBicicleta {
+    * categoria_bicicleta_id : int <<PK>>
+    --
+    categoria_bicicleta : varchar(255)
+  }
+
+  entity "CategoriaAccesorio" as CategoriaAccesorio {
+    * categoria_accesorio_id : int <<PK>>
+    --
+    categoria_accesorio : varchar(255)
+  }
+
+  entity "CategoriaRepuesto" as CategoriaRepuesto {
+    * categoria_repuesto_id : int <<PK>>
+    --
+    categoria_repuesto : varchar(255)
+  }
+
+  entity "EstadoReparacion" as EstadoReparacion {
+    * estado_reparacion_id : int <<PK>>
+    --
+    estado_reparacion : varchar(255)
+  }
+
+  entity "EstadoAlquiler" as EstadoAlquiler {
+    * estado_alquiler_id : int <<PK>>
+    --
+    estado_alquiler : varchar(255)
+  }
+
+  entity "EstadoBicicletaAlquiler" as EstadoBicicletaAlquiler {
+    * estado_bici_alquiler_id : int <<PK>>
+    --
+    estado_bici_alquiler : varchar(255)
+  }
+}
+
+package "Productos, bicicletas y repuestos" {
+  entity "ModeloBicicleta" as ModeloBicicleta {
+    * modelo_bicicleta_id : int <<PK>>
+    --
+    modelo_bicicleta : varchar(255)
+    rodado_modelo_bicicleta : varchar(255)
+    cuadro_modelo_bicicleta : varchar(255)
+    color_modelo_bicicleta : varchar(255)
+    marca_id : int <<FK>>
+    categoria_bicicleta_id : int <<FK>>
+  }
+
+  entity "Producto" as Producto {
+    * cod_producto : varchar(255) <<PK>>
+    --
+    nombre_producto : varchar(255)
+    descripcion_producto : varchar(255)
+    precio_venta_producto : decimal
+    tipo_producto_id : int <<FK>>
+  }
+
+  entity "BicicletaVenta" as BicicletaVenta {
+    * cod_producto : varchar(255) <<PK,FK>>
+    --
+    modelo_bicicleta_id : int <<FK>>
+    meses_garantia_bici_venta : int
+  }
+
+  entity "Accesorio" as Accesorio {
+    * cod_producto : varchar(255) <<PK,FK>>
+    --
+    talle_accesorio : varchar(255)
+    color_accesorio : varchar(255)
+    marca_id : int <<FK>>
+    categoria_accesorio_id : int <<FK>>
+  }
+
+  entity "BicicletaAlquiler" as BicicletaAlquiler {
+    * nro_serie_bici_alquiler : varchar(255) <<PK>>
+    --
+    modelo_bicicleta_id : int <<FK>>
+    precio_bici_alquiler_hora : decimal
+    precio_bici_alquiler_dia : decimal
+    estado_bici_alquiler_id : int <<FK>>
+  }
+
+  entity "Repuesto" as Repuesto {
+    * cod_repuesto : varchar(255) <<PK>>
+    --
+    desc_repuesto : varchar(255)
+    compatibilidad_repuesto : varchar(255)
+    precio_repuesto : decimal
+    categoria_repuesto_id : int <<FK>>
+  }
+}
+
+package "Operaciones" {
+  entity "Venta" as Venta {
+    * nro_venta : int <<PK>>
+    --
+    fecha_hora_venta : datetime
+    total_venta : decimal
+    cliente_id : int <<FK>>
+    empleado_id : int <<FK>>
+    forma_pago_id : int <<FK>>
+  }
+
+  entity "DetalleVenta" as DetalleVenta {
+    * detalle_venta_id : int <<PK>>
+    --
+    nro_venta : int <<FK>>
+    cod_producto : varchar(255) <<FK>>
+    cantidad_prod_venta : int
+    precio_unitario_prod_venta : decimal
+    subtotal_prod_venta : decimal
+  }
+
+  entity "Compra" as Compra {
+    * nro_compra : int <<PK>>
+    --
+    fecha_compra : datetime
+    total_compra : decimal
+    proveedor_id : int <<FK>>
+    empleado_id : int <<FK>>
+  }
+
+  entity "DetalleCompra" as DetalleCompra {
+    * detalle_compra_id : int <<PK>>
+    --
+    nro_compra : int <<FK>>
+    cod_producto : varchar(255) <<FK>>
+    cantidad_prod_compra : int
+    precio_unitario_prod_compra : decimal
+  }
+
+  entity "Alquiler" as Alquiler {
+    * nro_alquiler : int <<PK>>
+    --
+    fecha_inicio_alquiler : datetime
+    fecha_fin_pactada_alquiler : datetime
+    fecha_devolucion_real_alquiler : datetime
+    importe_total_alquiler : decimal
+    cliente_id : int <<FK>>
+    empleado_id : int <<FK>>
+    nro_serie_bici_alquiler : varchar(255) <<FK>>
+    forma_pago_id : int <<FK>>
+    estado_alquiler_id : int <<FK>>
+  }
+
+  entity "Reparacion" as Reparacion {
+    * nro_reparacion : int <<PK>>
+    --
+    numero_serie_bici_reparacion : varchar(255)
+    fecha_ingreso_reparacion : datetime
+    fecha_entrega_estimada_reparacion : datetime
+    fecha_entrega_real_reparacion : datetime
+    diagnostico_reparacion : varchar(255)
+    precio_mano_obra_reparacion : decimal
+    precio_repuestos_reparacion : decimal
+    precio_total_reparacion : decimal
+    cliente_id : int <<FK>>
+    empleado_id : int <<FK>>
+    modelo_bicicleta_id : int <<FK>>
+    estado_reparacion_id : int <<FK>>
+  }
+
+  entity "DetalleReparacion" as DetalleReparacion {
+    * detalle_reparacion_id : int <<PK>>
+    --
+    nro_reparacion : int <<FK>>
+    cod_repuesto : varchar(255) <<FK>>
+    cantidad_repuesto : int
+    precio_unitario_repuesto : decimal
+    subtotal_repuesto : decimal
+  }
+}
+
+Localidad ||--o{ Local
+Localidad ||--o{ Cliente
+Localidad ||--o{ Empleado
+Localidad ||--o{ Proveedor
+Local ||--o{ Empleado
+
+Marca ||--o{ ModeloBicicleta
+Marca ||--o{ Accesorio
+CategoriaBicicleta ||--o{ ModeloBicicleta
+CategoriaAccesorio ||--o{ Accesorio
+CategoriaRepuesto ||--o{ Repuesto
+TipoProducto ||--o{ Producto
+
+Producto ||--o| BicicletaVenta
+Producto ||--o| Accesorio
+ModeloBicicleta ||--o{ BicicletaVenta
+ModeloBicicleta ||--o{ BicicletaAlquiler
+ModeloBicicleta ||--o{ Reparacion
+EstadoBicicletaAlquiler ||--o{ BicicletaAlquiler
+
+Cliente ||--o{ Venta
+Empleado ||--o{ Venta
+FormaPago ||--o{ Venta
+Venta ||--|{ DetalleVenta
+Producto ||--o{ DetalleVenta
+
+Proveedor ||--o{ Compra
+Empleado ||--o{ Compra
+Compra ||--|{ DetalleCompra
+Producto ||--o{ DetalleCompra
+
+Cliente ||--o{ Alquiler
+Empleado ||--o{ Alquiler
+BicicletaAlquiler ||--o{ Alquiler
+FormaPago ||--o{ Alquiler
+EstadoAlquiler ||--o{ Alquiler
+
+Cliente ||--o{ Reparacion
+Empleado ||--o{ Reparacion
+EstadoReparacion ||--o{ Reparacion
+Reparacion ||--|{ DetalleReparacion
+Repuesto ||--o{ DetalleReparacion
+
+
+note bottom of DetalleCompra
+  No se almacena subtotal:
+  Maestra no contiene
+  Detalle_Compra_Subtotal_Prod_Compra.
+  Se calcula como cantidad × precio unitario.
+end note
+
+
+@enduml
