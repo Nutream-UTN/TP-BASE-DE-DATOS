@@ -13,29 +13,29 @@ package "Ubicación y personas" {
   entity "Localidad" as Localidad {
     * localidad_id : int <<PK>>
     --
-    nombre_localidad : varchar(255)
+    nombre_localidad : varchar(50)
     provincia : varchar(40)
   }
 
   entity "Local" as Local {
     * local_id : int <<PK>>
     --
-    nombre_local : varchar(255)
-    telefono_local : varchar(255)
-    email_local : varchar(255)
-    direccion_local : varchar(255)
+    nombre_local : varchar(100)
+    telefono_local : varchar(25)
+    email_local : varchar(254)
+    direccion_local : varchar(120)
     localidad_id : int <<FK>>
   }
 
   entity "Cliente" as Cliente {
     * cliente_id : int <<PK>>
     --
-    nombre_cliente : varchar(255)
-    apellido_cliente : varchar(255)
-    dni_cliente : varchar(255) <<AK>>
-    telefono_cliente : varchar(255)
-    email_cliente : varchar(255)
-    direccion_cliente : varchar(255)
+    nombre_cliente : varchar(80)
+    apellido_cliente : varchar(80)
+    dni_cliente : varchar(20) <<AK>>
+    telefono_cliente : varchar(25)
+    email_cliente : varchar(254)
+    direccion_cliente : varchar(120)
     fecha_nacimiento_cliente : datetime
     localidad_id : int <<FK>>
   }
@@ -43,14 +43,14 @@ package "Ubicación y personas" {
   entity "Empleado" as Empleado {
     * empleado_id : int <<PK>>
     --
-    nombre_empleado : varchar(255)
-    apellido_empleado : varchar(255)
-    dni_empleado : varchar(255) <<AK>>
-    puesto_empleado : varchar(255)
+    nombre_empleado : varchar(80)
+    apellido_empleado : varchar(80)
+    dni_empleado : varchar(20) <<AK>>
+    puesto_empleado : varchar(60)
     fecha_ingreso_empleado : datetime
-    telefono_empleado : varchar(255)
-    email_empleado : varchar(255)
-    domicilio_empleado : varchar(255)
+    telefono_empleado : varchar(25)
+    email_empleado : varchar(254)
+    domicilio_empleado : varchar(120)
     fecha_nac_empleado : datetime
     localidad_id : int <<FK>>
     local_id : int <<FK>>
@@ -59,11 +59,11 @@ package "Ubicación y personas" {
   entity "Proveedor" as Proveedor {
     * proveedor_id : int <<PK>>
     --
-    razon_social_proveedor : varchar(255)
-    cuit_proveedor : varchar(255) <<AK>>
-    telefono_proveedor : varchar(255)
-    email_proveedor : varchar(255)
-    direccion_proveedor : varchar(255)
+    razon_social_proveedor : varchar(150)
+    cuit_proveedor : varchar(20) <<AK>>
+    telefono_proveedor : varchar(25)
+    email_proveedor : varchar(254)
+    direccion_proveedor : varchar(120)
     localidad_id : int <<FK>>
   }
 }
@@ -78,49 +78,49 @@ package "Catálogos" {
   entity "TipoProducto" as TipoProducto {
     * tipo_producto_id : int <<PK>>
     --
-    tipo_producto : varchar(255)
+    tipo_producto : varchar(30)
   }
 
   entity "Marca" as Marca {
     * marca_id : int <<PK>>
     --
-    marca : varchar(255)
+    marca : varchar(60)
   }
 
   entity "CategoriaBicicleta" as CategoriaBicicleta {
     * categoria_bicicleta_id : int <<PK>>
     --
-    categoria_bicicleta : varchar(255)
+    categoria_bicicleta : varchar(60)
   }
 
   entity "CategoriaAccesorio" as CategoriaAccesorio {
     * categoria_accesorio_id : int <<PK>>
     --
-    categoria_accesorio : varchar(255)
+    categoria_accesorio : varchar(60)
   }
 
   entity "CategoriaRepuesto" as CategoriaRepuesto {
     * categoria_repuesto_id : int <<PK>>
     --
-    categoria_repuesto : varchar(255)
+    categoria_repuesto : varchar(60)
   }
 
   entity "EstadoReparacion" as EstadoReparacion {
     * estado_reparacion_id : int <<PK>>
     --
-    estado_reparacion : varchar(255)
+    estado_reparacion : varchar(60)
   }
 
   entity "EstadoAlquiler" as EstadoAlquiler {
     * estado_alquiler_id : int <<PK>>
     --
-    estado_alquiler : varchar(255)
+    estado_alquiler : varchar(60)
   }
 
   entity "EstadoBicicletaAlquiler" as EstadoBicicletaAlquiler {
     * estado_bici_alquiler_id : int <<PK>>
     --
-    estado_bici_alquiler : varchar(255)
+    estado_bici_alquiler : varchar(60)
   }
 }
 
@@ -128,41 +128,41 @@ package "Productos, bicicletas y repuestos" {
   entity "ModeloBicicleta" as ModeloBicicleta {
     * modelo_bicicleta_id : int <<PK>>
     --
-    modelo_bicicleta : varchar(255)
-    rodado_modelo_bicicleta : varchar(255)
-    cuadro_modelo_bicicleta : varchar(255)
-    color_modelo_bicicleta : varchar(255)
+    modelo_bicicleta : varchar(100)
+    rodado_modelo_bicicleta : varchar(20)
+    cuadro_modelo_bicicleta : varchar(40)
+    color_modelo_bicicleta : varchar(40)
     marca_id : int <<FK>>
     categoria_bicicleta_id : int <<FK>>
   }
 
   entity "Producto" as Producto {
-    * cod_producto : varchar(255) <<PK>>
+    * cod_producto : varchar(25) <<PK>>
     --
-    nombre_producto : varchar(255)
+    nombre_producto : varchar(120)
     descripcion_producto : varchar(255)
     precio_venta_producto : decimal
     tipo_producto_id : int <<FK>>
   }
 
   entity "BicicletaVenta" as BicicletaVenta {
-    * cod_producto : varchar(255) <<PK,FK>>
+    * cod_producto : varchar(25) <<PK,FK>>
     --
     modelo_bicicleta_id : int <<FK>>
     meses_garantia_bici_venta : int
   }
 
   entity "Accesorio" as Accesorio {
-    * cod_producto : varchar(255) <<PK,FK>>
+    * cod_producto : varchar(25) <<PK,FK>>
     --
-    talle_accesorio : varchar(255)
-    color_accesorio : varchar(255)
+    talle_accesorio : varchar(20)
+    color_accesorio : varchar(40)
     marca_id : int <<FK>>
     categoria_accesorio_id : int <<FK>>
   }
 
   entity "BicicletaAlquiler" as BicicletaAlquiler {
-    * nro_serie_bici_alquiler : varchar(255) <<PK>>
+    * nro_serie_bici_alquiler : varchar(50) <<PK>>
     --
     modelo_bicicleta_id : int <<FK>>
     precio_bici_alquiler_hora : decimal
@@ -171,7 +171,7 @@ package "Productos, bicicletas y repuestos" {
   }
 
   entity "Repuesto" as Repuesto {
-    * cod_repuesto : varchar(255) <<PK>>
+    * cod_repuesto : varchar(25) <<PK>>
     --
     desc_repuesto : varchar(255)
     compatibilidad_repuesto : varchar(255)
@@ -195,7 +195,7 @@ package "Operaciones" {
     * detalle_venta_id : int <<PK>>
     --
     nro_venta : int <<FK>>
-    cod_producto : varchar(255) <<FK>>
+    cod_producto : varchar(25) <<FK>>
     cantidad_prod_venta : int
     precio_unitario_prod_venta : decimal
     subtotal_prod_venta : decimal
@@ -214,7 +214,7 @@ package "Operaciones" {
     * detalle_compra_id : int <<PK>>
     --
     nro_compra : int <<FK>>
-    cod_producto : varchar(255) <<FK>>
+    cod_producto : varchar(25) <<FK>>
     cantidad_prod_compra : int
     precio_unitario_prod_compra : decimal
   }
@@ -228,7 +228,7 @@ package "Operaciones" {
     importe_total_alquiler : decimal
     cliente_id : int <<FK>>
     empleado_id : int <<FK>>
-    nro_serie_bici_alquiler : varchar(255) <<FK>>
+    nro_serie_bici_alquiler : varchar(50) <<FK>>
     forma_pago_id : int <<FK>>
     estado_alquiler_id : int <<FK>>
   }
@@ -236,7 +236,7 @@ package "Operaciones" {
   entity "Reparacion" as Reparacion {
     * nro_reparacion : int <<PK>>
     --
-    numero_serie_bici_reparacion : varchar(255)
+    numero_serie_bici_reparacion : varchar(50)
     fecha_ingreso_reparacion : datetime
     fecha_entrega_estimada_reparacion : datetime
     fecha_entrega_real_reparacion : datetime
@@ -254,7 +254,7 @@ package "Operaciones" {
     * detalle_reparacion_id : int <<PK>>
     --
     nro_reparacion : int <<FK>>
-    cod_repuesto : varchar(255) <<FK>>
+    cod_repuesto : varchar(25) <<FK>>
     cantidad_repuesto : int
     precio_unitario_repuesto : decimal
     subtotal_repuesto : decimal
