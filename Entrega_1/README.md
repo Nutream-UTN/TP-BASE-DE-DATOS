@@ -20,7 +20,7 @@ A continuación se justifican los principales criterios de organización y relac
 
 - **DetalleVenta:** resuelve la relación muchos a muchos entre una venta y los productos vendidos: una venta puede incluir varios productos, y un producto puede aparecer en distintas ventas. La entidad también registra la cantidad y el precio unitario correspondiente a cada renglón.
 - **DetalleCompra:** separa los productos comprados de los datos generales de la compra. Permite registrar varios productos por compra y conservar para cada renglón su cantidad y precio unitario de compra.
-- **Bicicleta de alquiler:** se representa cada bicicleta disponible para alquilar mediante su número de serie. Se mantiene separada del catálogo de bicicletas para la venta porque el alquiler registra unidades físicas, con estado y tarifas por hora y por día.
+- **Bicicleta de alquiler:** se representa cada bicicleta disponible para alquilar mediante su número de serie y se vincula con el local propietario de la flota. Se mantiene separada del catálogo de bicicletas para la venta porque el alquiler registra unidades físicas, con estado y tarifas por hora y por día.
 - **Repuesto:** representa un tipo de repuesto, no una unidad física particular. Por eso, el mismo repuesto puede utilizarse en distintas reparaciones. La relación muchos a muchos entre `Reparacion` y `Repuesto` se resuelve mediante `DetalleReparacion`, donde se registran la cantidad y el precio unitario del repuesto utilizado.
 - **Estados:** los estados de reparaciones, alquileres y bicicletas de alquiler se modelan en catálogos separados. Cada proceso conserva así sus propios valores de estado y puede referenciarlos mediante una clave foránea.
 
