@@ -7,7 +7,7 @@
 ## Información del Grupo
 * **Grupo:** 38
 * **Nombre de grupo / Esquema:** `NUTREAM`
-* **Curso:** <CURSO>
+* **Curso:** K3522
 
 ### Integrantes:
 * **Juliano, Tomás Rubén** — Legajo: 2150414 — *Email:* `tjuliano@frba.utn.edu.ar` (Responsable de grupo)

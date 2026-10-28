@@ -1,27 +1,22 @@
 # Universidad Tecnológica Nacional
-## Facultad Regional Buenos Aires
-### Asignatura: Base de Datos / Gestión de Datos — 2° Cuatrimestre 2026
+### Facultad Regional Buenos Aires — 2° Cuatrimestre 2026
+### Asignatura: Base de Datos / Gestión de Datos
 
 ---
 
 # Documento de Estrategia y Justificaciones de Diseño
 ## Trabajo Práctico: FRBA – Gestión de Bicicletería
-### Entrega 2: Modelo Relacional y Migración de Datos
+### Entrega 2: Modelo Relacional y Migración
 
 ---
 
-### Datos del Equipo
-* **Número de Grupo:** 38
-* **Nombre de Grupo / Esquema SQL:** `NUTREAM`
-* **Curso:** <CURSO>
-
-#### Integrantes:
-| Apellido y Nombre | Legajo | Email Institucional | Rol |
-|---|---|---|---|
-| **Juliano, Tomás Rubén** | 2150414 | `tjuliano@frba.utn.edu.ar` | Representante de Grupo |
-| **Candal, Nicolas** | 2151250 | `ncandal@frba.utn.edu.ar` | Integrante |
-| **Rivas, Tiziano** | 2226431 | `trivas@frba.utn.edu.ar` | Integrante |
-| **Moreno, Rocco** | 2139133 | `rmorenocicero@frba.utn.edu.ar` | Integrante |
+| Parámetro | Valor |
+|---|---|
+| **Número de Grupo** | 38 |
+| **Nombre de Grupo / Esquema SQL** | `NUTREAM` |
+| **Curso** | K3522 |
+| **Representante del Grupo** | Juliano, Tomás Rubén (Legajo: 2150414 — `tjuliano@frba.utn.edu.ar`) |
+| **Integrantes** | Candal, Nicolas (2151250) · Rivas, Tiziano (2226431) · Moreno, Rocco (2139133) |
 
 ---
 
@@ -45,18 +40,17 @@
    - [5.3 Transaccionalidad y Manejo de Excepciones](#53-transaccionalidad-y-manejo-de-excepciones)
    - [5.4 Optimización de Rendimiento e Indexación](#54-optimización-de-rendimiento-e-indexación)
 6. [Auditoría y Verificación de Resultados](#6-auditoría-y-verificación-de-resultados)
-7. [Diagrama Entidad-Relación (DER)](#7-diagrama-entidad-relación-der)
 
 ---
 
 ## 1. Introducción y Objetivos de la Entrega 2
 
-El presente documento expone las justificaciones teóricas, decisiones de diseño y estrategias técnicas implementadas para la **Segunda Entrega (Modelo Relacional y Migración)** del Trabajo Práctico de Base de Datos (UTN FRBA, 2° Cuatrimestre 2026).
+El presente documento expone las justificaciones teóricas, decisiones de diseño y estrategias técnicas implementadas para la **Segunda Entrega (Modelo Relacional y Migración)** del Trabajo Práctico de Base de Datos (UTN FRBA, 2° Cuatrimestre 2026, Curso K3522).
 
 El objetivo central consistió en transformar la estructura plana, desnormalizada y heterogénea provista en la tabla `gd_esquema.Maestra` (compuesta por 291.899 filas y 89 columnas) en una base de datos relacional en Tercera Forma Normal (3FN), estructurada en el esquema propio `[NUTREAM]`, respetando todas las reglas del negocio:
 * Gestión integral de cuatro líneas de negocio: Ventas, Alquileres, Reparaciones en taller y Compras a proveedores.
 * Preservación del 100% de la información histórica original sin modificar los datos de origen ni inferir datos ficticios.
-* Desarrollo de un script único (`script_creacion_inicial.sql`), completamente automatizado, idempotente y cuya ejecución total toma solo **13 segundos**, ampliamente por debajo del límite de 10 minutos fijado por la cátedra.
+* Desarrollo de un script único (`script_creacion_inicial.sql`), completamente automatizado, idempotente y cuya ejecución total toma solo **12,5 segundos**, ampliamente por debajo del límite de 10 minutos fijado por la cátedra.
 
 ---
 
@@ -64,7 +58,7 @@ El objetivo central consistió en transformar la estructura plana, desnormalizad
 
 El diseño consta de **27 entidades relacionales** organizadas en 4 paquetes conceptuales:
 
-```
+```text
 [Catálogos y Ubicación] ──> [Personas, Locales y Proveedores] ──> [Catálogo de Productos y Flota] ──> [Operaciones Transaccionales y Detalles]
 ```
 
@@ -83,9 +77,9 @@ Se aplicaron principios estrictos de normalización:
 * **`Local`:** 
   Representa cada una de las sucursales de la bicicletería. Posee clave subrogada `local_id`, datos de contacto, dirección y clave foránea a `Localidad`. Se identificaron **5 locales físicos**.
 * **Separación de `Cliente` y `Empleado`:** 
-  Se evaluó la posibilidad de implementar una jerarquía con supertipo `Persona`. Sin embargo, se optó conscientemente por mantener `Cliente` y `Empleado` como entidades separadas por las siguientes razones de negocio y diseño:
-  1. **Disyunción de roles y atributos:** Un empleado posee atributos laborales estrictos (`puesto_empleado`, `fecha_ingreso_empleado`) que carecen por completo de sentido para un cliente.
-  2. **Relación con operaciones:** En las ventas y alquileres intervienen simultáneamente un cliente y un empleado atendiendo la operación. Mantener las tablas diferenciadas simplifica las claves foráneas en `Venta`, `Alquiler` y `Reparacion`, evitando auto-relaciones confusas sobre una misma tabla de personas.
+  Se evaluó la posibilidad de implementar una jerarquía con supertipo `Persona`. Sin embargo, se optó conscientemente por mantener `Cliente` y `Empleado` como entidades separadas por las siguientes razones:
+  1. **Disyunción de roles y atributos:** Un empleado posee atributos laborales estrictos (`puesto_empleado`, `fecha_ingreso_empleado`) que carecen de sentido para un cliente.
+  2. **Relación con operaciones:** En las ventas y alquileres intervienen simultáneamente un cliente y un empleado atendiendo la operación. Mantener las tablas diferenciadas simplifica las claves foráneas en `Venta`, `Alquiler` y `Reparacion`, evitando auto-relaciones sobre una misma tabla.
   3. **Eficiencia en la migración:** Se identificaron **25 empleados** y **147.613 clientes**. Separarlos agiliza radicalmente los índices y las búsquedas durante la carga masiva.
 * **`Proveedor`:** 
   Almacena a los distribuidores a quienes los locales compran bicicletas y accesorios. Posee `proveedor_id`, razón social, CUIT único (`cuit_proveedor`), datos de contacto y vínculo con `Localidad`. En la tabla maestra existen **5 proveedores**.
@@ -162,14 +156,14 @@ La cátedra estipuló que al tratarse de datos desnormalizados, pueden existir i
 * **Solución:** Se mantuvo cada línea como una entidad independiente en `DetalleVenta` mediante la clave subrogada `detalle_venta_id`.
 
 ### 4.3 Omisión y Cálculo Dinámico del Subtotal de Compra
-* La columna `Detalle_Compra_Subtotal_Prod_Compra` no existe en la tabla maestra. Almacenar un subtotal calculado violaría el principio de evitar redundancia innecesaria en el modelo transaccional. Por ello, se definió explícitamente en el DER y en el script que dicho valor se calcula dinámicamente como `cantidad_prod_compra * precio_unitario_prod_compra`.
+* La columna `Detalle_Compra_Subtotal_Prod_Compra` no existe en la tabla maestra. Almacenar un subtotal calculado violaría el principio de evitar redundancia innecesaria en el modelo transaccional. Por ello, se definió explícitamente en el diseño y en el script que dicho valor se calcula dinámicamente como `cantidad_prod_compra * precio_unitario_prod_compra`.
 
 ### 4.4 Respeto Riguroso de Tipos de Datos de la Tabla Maestra
 Para dar cumplimiento estricto a la consigna *"Todas las columnas creadas para las nuevas tablas deberán respetar los mismos tipos de datos que las columnas existentes en la tabla maestra"*, se replicaron los tipos exactos:
 * Importes monetarios: `NUMERIC(38,2)`
 * Fechas y marcas temporales: `DATETIME2`
 * Cadenas de caracteres: `VARCHAR(255)`
-* Cantidades, identificadores originales y garantías: `INT`
+* Cantidades, identificadores y garantías: `INT`
 
 ---
 
@@ -251,19 +245,5 @@ Se auditó la totalidad de filas migradas en cada una de las 27 tablas del esque
 | | `DetalleReparacion` | **69.213** | Renglones de repuestos utilizados en taller |
 
 > **Balance total de filas operativas:**  
-> $$152.418 \text{ (Ventas)} + 648 \text{ (Compras)} + 69.620 \text{ (Alquileres)} + 69.213 \text{ (Reparaciones)} = \mathbf{291.899 \text{ filas}}$$  
+> **152.418** (Ventas) + **648** (Compras) + **69.620** (Alquileres) + **69.213** (Reparaciones) = **291.899 filas**  
 > Corresponde al **100,00% de los registros de la tabla maestra**, sin pérdidas ni omisiones.
-
----
-
-## 7. Diagrama Entidad-Relación (DER)
-
-El modelo relacional detallado se encuentra especificado en código fuente PlantUML en:
-* [diagrama.puml](file:///home/tirivas/utn/bbdd/TP%20Frba%20Gestion%20de%20Bicicleteria%201.0%20-%202C%202026/TP-BASE-DE-DATOS/Entrega_2/diagrama.puml)
-
-Para la entrega y generación del PDF final, el diagrama debe exportarse a formato imagen (`DER.png` / `DER.jpg`) e insertarse a continuación:
-
-*(Espacio reservado para la inserción de la imagen del DER transaccional corregido)*
-
-![DER Transaccional](DER.png)
-
