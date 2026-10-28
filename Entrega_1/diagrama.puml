@@ -205,6 +205,7 @@ package "Operaciones" {
   entity "Compra" as Compra {
     * nro_compra : int <<PK>>
     --
+    local_id : int <<FK>>
     fecha_compra : datetime2
     total_compra : numeric
     proveedor_id : int <<FK>>
@@ -268,6 +269,7 @@ Localidad ||--o{ Empleado
 Localidad ||--o{ Proveedor
 Local ||--o{ Empleado
 Local ||--o{ BicicletaAlquiler
+Local ||--o{ Compra
 
 Marca ||--o{ ModeloBicicleta
 Marca ||--o{ Accesorio
