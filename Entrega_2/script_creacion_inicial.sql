@@ -172,7 +172,7 @@ CREATE TABLE [NUTREAM].[Cliente] (
     telefono_cliente VARCHAR(255) NOT NULL,
     email_cliente VARCHAR(255) NOT NULL,
     direccion_cliente VARCHAR(255) NOT NULL,
-    fecha_nacimiento_cliente DATETIME2 NOT NULL,
+    fecha_nacimiento_cliente DATETIME2(6) NOT NULL,
     localidad_id INT NOT NULL,
     CONSTRAINT PK_Cliente PRIMARY KEY (cliente_id),
     CONSTRAINT FK_Cliente_Localidad FOREIGN KEY (localidad_id) REFERENCES [NUTREAM].[Localidad](localidad_id)
@@ -184,11 +184,11 @@ CREATE TABLE [NUTREAM].[Empleado] (
     apellido_empleado VARCHAR(255) NOT NULL,
     dni_empleado VARCHAR(255) NOT NULL,
     puesto_empleado VARCHAR(255) NOT NULL,
-    fecha_ingreso_empleado DATETIME2 NOT NULL,
+    fecha_ingreso_empleado DATETIME2(6) NOT NULL,
     telefono_empleado VARCHAR(255) NOT NULL,
     email_empleado VARCHAR(255) NOT NULL,
     domicilio_empleado VARCHAR(255) NOT NULL,
-    fecha_nac_empleado DATETIME2 NOT NULL,
+    fecha_nac_empleado DATETIME2(6) NOT NULL,
     localidad_id INT NOT NULL,
     CONSTRAINT PK_Empleado PRIMARY KEY (empleado_id),
     CONSTRAINT FK_Empleado_Localidad FOREIGN KEY (localidad_id) REFERENCES [NUTREAM].[Localidad](localidad_id),
@@ -221,7 +221,14 @@ CREATE TABLE [NUTREAM].[ModeloBicicleta] (
     CONSTRAINT PK_ModeloBicicleta PRIMARY KEY (modelo_bicicleta_id),
     CONSTRAINT FK_ModeloBicicleta_Marca FOREIGN KEY (marca_id) REFERENCES [NUTREAM].[Marca](marca_id),
     CONSTRAINT FK_ModeloBicicleta_Categoria FOREIGN KEY (categoria_bicicleta_id) REFERENCES [NUTREAM].[CategoriaBicicleta](categoria_bicicleta_id),
-    CONSTRAINT UQ_ModeloBicicleta_Nombre UNIQUE (modelo_bicicleta)
+    CONSTRAINT UQ_ModeloBicicleta_Atributos UNIQUE (
+        modelo_bicicleta,
+        rodado_modelo_bicicleta,
+        cuadro_modelo_bicicleta,
+        color_modelo_bicicleta,
+        marca_id,
+        categoria_bicicleta_id
+    )
 );
 
 CREATE TABLE [NUTREAM].[Repuesto] (
@@ -282,7 +289,7 @@ GO
 -- 3.4 Operaciones Transaccionales y Detalles
 CREATE TABLE [NUTREAM].[Venta] (
     nro_venta INT NOT NULL,
-    fecha_hora_venta DATETIME2 NOT NULL,
+    fecha_hora_venta DATETIME2(6) NOT NULL,
     total_venta NUMERIC(38,2) NOT NULL,
     cliente_id INT NOT NULL,
     empleado_id INT NOT NULL,
@@ -310,7 +317,7 @@ CREATE TABLE [NUTREAM].[DetalleVenta] (
 CREATE TABLE [NUTREAM].[Compra] (
     nro_compra INT NOT NULL,
     local_id INT NOT NULL,
-    fecha_compra DATETIME2 NOT NULL,
+    fecha_compra DATETIME2(6) NOT NULL,
     total_compra NUMERIC(38,2) NOT NULL,
     proveedor_id INT NOT NULL,
     empleado_id INT NOT NULL,
@@ -333,9 +340,9 @@ CREATE TABLE [NUTREAM].[DetalleCompra] (
 
 CREATE TABLE [NUTREAM].[Alquiler] (
     nro_alquiler INT NOT NULL,
-    fecha_inicio_alquiler DATETIME2 NOT NULL,
-    fecha_fin_pactada_alquiler DATETIME2 NOT NULL,
-    fecha_devolucion_real_alquiler DATETIME2 NOT NULL,
+    fecha_inicio_alquiler DATETIME2(6) NOT NULL,
+    fecha_fin_pactada_alquiler DATETIME2(6) NOT NULL,
+    fecha_devolucion_real_alquiler DATETIME2(6) NULL,
     importe_total_alquiler NUMERIC(38,2) NOT NULL,
     cliente_id INT NOT NULL,
     empleado_id INT NOT NULL,
@@ -353,9 +360,9 @@ CREATE TABLE [NUTREAM].[Alquiler] (
 CREATE TABLE [NUTREAM].[Reparacion] (
     nro_reparacion INT NOT NULL,
     numero_serie_bici_reparacion VARCHAR(255) NOT NULL,
-    fecha_ingreso_reparacion DATETIME2 NOT NULL,
-    fecha_entrega_estimada_reparacion DATETIME2 NOT NULL,
-    fecha_entrega_real_reparacion DATETIME2 NOT NULL,
+    fecha_ingreso_reparacion DATETIME2(6) NOT NULL,
+    fecha_entrega_estimada_reparacion DATETIME2(6) NOT NULL,
+    fecha_entrega_real_reparacion DATETIME2(6) NULL,
     diagnostico_reparacion VARCHAR(255) NOT NULL,
     precio_mano_obra_reparacion NUMERIC(38,2) NOT NULL,
     precio_repuestos_reparacion NUMERIC(38,2) NOT NULL,
@@ -677,8 +684,17 @@ BEGIN
         modBici.modelo_bicicleta_id,
         m.Bicicleta_Venta_Meses_Garantia_Bici_Venta
     FROM gd_esquema.Maestra m
+    JOIN [NUTREAM].[Marca] mar
+        ON mar.marca = RTRIM(LTRIM(m.Marca_Marca))
+    JOIN [NUTREAM].[CategoriaBicicleta] cat
+        ON cat.categoria_bicicleta = RTRIM(LTRIM(m.Categoria_Bicicleta_Categoria_Bicicleta))
     JOIN [NUTREAM].[ModeloBicicleta] modBici 
         ON modBici.modelo_bicicleta = RTRIM(LTRIM(m.Modelo_Bicicleta_Modelo_Bicicleta))
+       AND modBici.rodado_modelo_bicicleta = RTRIM(LTRIM(m.Modelo_Bicicleta_Rodado_Modelo_Bicicleta))
+       AND modBici.cuadro_modelo_bicicleta = RTRIM(LTRIM(m.Modelo_Bicicleta_Cuadro_Modelo_Bicicleta))
+       AND modBici.color_modelo_bicicleta = RTRIM(LTRIM(m.Modelo_Bicicleta_Color_Modelo_Bicicleta))
+       AND modBici.marca_id = mar.marca_id
+       AND modBici.categoria_bicicleta_id = cat.categoria_bicicleta_id
     WHERE m.Tipo_Producto_Tipo_Producto = 'Bicicleta' 
       AND m.Producto_Cod_Producto IS NOT NULL;
 END;
@@ -729,8 +745,17 @@ BEGIN
         est.estado_bici_alquiler_id,
         loc.local_id
     FROM gd_esquema.Maestra m
+    JOIN [NUTREAM].[Marca] mar
+        ON mar.marca = RTRIM(LTRIM(m.Marca_Marca))
+    JOIN [NUTREAM].[CategoriaBicicleta] cat
+        ON cat.categoria_bicicleta = RTRIM(LTRIM(m.Categoria_Bicicleta_Categoria_Bicicleta))
     JOIN [NUTREAM].[ModeloBicicleta] modBici 
         ON modBici.modelo_bicicleta = RTRIM(LTRIM(m.Modelo_Bicicleta_Modelo_Bicicleta))
+       AND modBici.rodado_modelo_bicicleta = RTRIM(LTRIM(m.Modelo_Bicicleta_Rodado_Modelo_Bicicleta))
+       AND modBici.cuadro_modelo_bicicleta = RTRIM(LTRIM(m.Modelo_Bicicleta_Cuadro_Modelo_Bicicleta))
+       AND modBici.color_modelo_bicicleta = RTRIM(LTRIM(m.Modelo_Bicicleta_Color_Modelo_Bicicleta))
+       AND modBici.marca_id = mar.marca_id
+       AND modBici.categoria_bicicleta_id = cat.categoria_bicicleta_id
     JOIN [NUTREAM].[EstadoBicicletaAlquiler] est 
         ON est.estado_bici_alquiler = RTRIM(LTRIM(m.Estado_Bici_Alquiler_Estado_Bici_Alquiler))
     JOIN [NUTREAM].[Local] loc 
@@ -915,8 +940,17 @@ BEGIN
        AND c.email_cliente = RTRIM(LTRIM(m.Cliente_Email_Cliente))
     JOIN [NUTREAM].[Empleado] e 
         ON e.dni_empleado = RTRIM(LTRIM(m.Empleado_Dni_Empleado))
+    JOIN [NUTREAM].[Marca] mar
+        ON mar.marca = RTRIM(LTRIM(m.Marca_Marca))
+    JOIN [NUTREAM].[CategoriaBicicleta] cat
+        ON cat.categoria_bicicleta = RTRIM(LTRIM(m.Categoria_Bicicleta_Categoria_Bicicleta))
     JOIN [NUTREAM].[ModeloBicicleta] mb 
         ON mb.modelo_bicicleta = RTRIM(LTRIM(m.Modelo_Bicicleta_Modelo_Bicicleta))
+       AND mb.rodado_modelo_bicicleta = RTRIM(LTRIM(m.Modelo_Bicicleta_Rodado_Modelo_Bicicleta))
+       AND mb.cuadro_modelo_bicicleta = RTRIM(LTRIM(m.Modelo_Bicicleta_Cuadro_Modelo_Bicicleta))
+       AND mb.color_modelo_bicicleta = RTRIM(LTRIM(m.Modelo_Bicicleta_Color_Modelo_Bicicleta))
+       AND mb.marca_id = mar.marca_id
+       AND mb.categoria_bicicleta_id = cat.categoria_bicicleta_id
     JOIN [NUTREAM].[EstadoReparacion] er 
         ON er.estado_reparacion = RTRIM(LTRIM(m.Estado_Reparacion_Estado_Reparacion))
     WHERE m.Reparacion_Nro_Reparacion IS NOT NULL;

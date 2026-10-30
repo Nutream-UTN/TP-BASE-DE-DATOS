@@ -36,7 +36,7 @@ package "Ubicación y personas" {
     telefono_cliente : varchar(255)
     email_cliente : varchar(255)
     direccion_cliente : varchar(255)
-    fecha_nacimiento_cliente : datetime2
+    fecha_nacimiento_cliente : datetime2(6)
     localidad_id : int <<FK>>
   }
 
@@ -47,11 +47,11 @@ package "Ubicación y personas" {
     apellido_empleado : varchar(255)
     dni_empleado : varchar(255)
     puesto_empleado : varchar(255)
-    fecha_ingreso_empleado : datetime2
+    fecha_ingreso_empleado : datetime2(6)
     telefono_empleado : varchar(255)
     email_empleado : varchar(255)
     domicilio_empleado : varchar(255)
-    fecha_nac_empleado : datetime2
+    fecha_nac_empleado : datetime2(6)
     localidad_id : int <<FK>>
   }
 
@@ -184,7 +184,7 @@ package "Operaciones" {
   entity "Venta" as Venta {
     * nro_venta : int <<PK>>
     --
-    fecha_hora_venta : datetime2
+    fecha_hora_venta : datetime2(6)
     total_venta : numeric
     cliente_id : int <<FK>>
     empleado_id : int <<FK>>
@@ -206,7 +206,7 @@ package "Operaciones" {
     * nro_compra : int <<PK>>
     --
     local_id : int <<FK>>
-    fecha_compra : datetime2
+    fecha_compra : datetime2(6)
     total_compra : numeric
     proveedor_id : int <<FK>>
     empleado_id : int <<FK>>
@@ -224,9 +224,9 @@ package "Operaciones" {
   entity "Alquiler" as Alquiler {
     * nro_alquiler : int <<PK>>
     --
-    fecha_inicio_alquiler : datetime2
-    fecha_fin_pactada_alquiler : datetime2
-    fecha_devolucion_real_alquiler : datetime2
+    fecha_inicio_alquiler : datetime2(6)
+    fecha_fin_pactada_alquiler : datetime2(6)
+    fecha_devolucion_real_alquiler : datetime2(6)
     importe_total_alquiler : numeric
     cliente_id : int <<FK>>
     empleado_id : int <<FK>>
@@ -239,9 +239,9 @@ package "Operaciones" {
     * nro_reparacion : int <<PK>>
     --
     numero_serie_bici_reparacion : varchar(255)
-    fecha_ingreso_reparacion : datetime2
-    fecha_entrega_estimada_reparacion : datetime2
-    fecha_entrega_real_reparacion : datetime2
+    fecha_ingreso_reparacion : datetime2(6)
+    fecha_entrega_estimada_reparacion : datetime2(6)
+    fecha_entrega_real_reparacion : datetime2(6)
     diagnostico_reparacion : varchar(255)
     precio_mano_obra_reparacion : numeric
     precio_repuestos_reparacion : numeric
