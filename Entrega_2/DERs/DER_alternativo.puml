@@ -1,0 +1,343 @@
+@startuml
+title DER transaccional - Gestión de Bicicletería
+hide circle
+skinparam linetype ortho
+skinparam shadowing false
+skinparam nodesep 60
+skinparam ranksep 70
+skinparam ArrowColor #555555
+skinparam entity {
+  BorderColor #375A7F
+  BackgroundColor #FEFEFE
+}
+
+legend top right
+  |<#E8F0FA> Ubicación y personas |
+  |<#EEEEEE> Catálogos |
+  |<#E6F4E8> Productos, bicicletas y repuestos |
+  |<#FFF2DB> Operaciones |
+endlegend
+
+' ===== persona =====
+entity "Localidad" as Localidad #E8F0FA {
+  * localidad_id : int <<PK>>
+  --
+  nombre_localidad : varchar(255)
+  provincia : varchar(255)
+}
+
+entity "Local" as Local #E8F0FA {
+  * local_id : int <<PK>>
+  --
+  nombre_local : varchar(255)
+  telefono_local : varchar(255)
+  email_local : varchar(255)
+  direccion_local : varchar(255)
+  localidad_id : int <<FK>>
+}
+
+entity "Cliente" as Cliente #E8F0FA {
+  * cliente_id : int <<PK>>
+  --
+  nombre_cliente : varchar(255)
+  apellido_cliente : varchar(255)
+  dni_cliente : varchar(255)
+  telefono_cliente : varchar(255)
+  email_cliente : varchar(255)
+  direccion_cliente : varchar(255)
+  fecha_nacimiento_cliente : datetime2(6)
+  localidad_id : int <<FK>>
+}
+
+entity "Empleado" as Empleado #E8F0FA {
+  * empleado_id : int <<PK>>
+  --
+  nombre_empleado : varchar(255)
+  apellido_empleado : varchar(255)
+  dni_empleado : varchar(255)
+  puesto_empleado : varchar(255)
+  fecha_ingreso_empleado : datetime2(6)
+  telefono_empleado : varchar(255)
+  email_empleado : varchar(255)
+  domicilio_empleado : varchar(255)
+  fecha_nac_empleado : datetime2(6)
+  localidad_id : int <<FK>>
+}
+
+entity "Proveedor" as Proveedor #E8F0FA {
+  * proveedor_id : int <<PK>>
+  --
+  razon_social_proveedor : varchar(255)
+  cuit_proveedor : varchar(255)
+  telefono_proveedor : varchar(255)
+  email_proveedor : varchar(255)
+  direccion_proveedor : varchar(255)
+  localidad_id : int <<FK>>
+}
+
+
+' ===== catalogo =====
+entity "FormaPago" as FormaPago #EEEEEE {
+  * forma_pago_id : int <<PK>>
+  --
+  forma_pago : varchar(255)
+}
+
+entity "TipoProducto" as TipoProducto #EEEEEE {
+  * tipo_producto_id : int <<PK>>
+  --
+  tipo_producto : varchar(255)
+}
+
+entity "Marca" as Marca #EEEEEE {
+  * marca_id : int <<PK>>
+  --
+  marca : varchar(255)
+}
+
+entity "CategoriaBicicleta" as CategoriaBicicleta #EEEEEE {
+  * categoria_bicicleta_id : int <<PK>>
+  --
+  categoria_bicicleta : varchar(255)
+}
+
+entity "CategoriaAccesorio" as CategoriaAccesorio #EEEEEE {
+  * categoria_accesorio_id : int <<PK>>
+  --
+  categoria_accesorio : varchar(255)
+}
+
+entity "CategoriaRepuesto" as CategoriaRepuesto #EEEEEE {
+  * categoria_repuesto_id : int <<PK>>
+  --
+  categoria_repuesto : varchar(255)
+}
+
+entity "EstadoReparacion" as EstadoReparacion #EEEEEE {
+  * estado_reparacion_id : int <<PK>>
+  --
+  estado_reparacion : varchar(255)
+}
+
+entity "EstadoAlquiler" as EstadoAlquiler #EEEEEE {
+  * estado_alquiler_id : int <<PK>>
+  --
+  estado_alquiler : varchar(255)
+}
+
+entity "EstadoBicicletaAlquiler" as EstadoBicicletaAlquiler #EEEEEE {
+  * estado_bici_alquiler_id : int <<PK>>
+  --
+  estado_bici_alquiler : varchar(255)
+}
+
+
+' ===== producto =====
+entity "ModeloBicicleta" as ModeloBicicleta #E6F4E8 {
+  * modelo_bicicleta_id : int <<PK>>
+  --
+  modelo_bicicleta : varchar(255)
+  rodado_modelo_bicicleta : varchar(255)
+  cuadro_modelo_bicicleta : varchar(255)
+  color_modelo_bicicleta : varchar(255)
+  marca_id : int <<FK>>
+  categoria_bicicleta_id : int <<FK>>
+}
+
+entity "Producto" as Producto #E6F4E8 {
+  * cod_producto : varchar(255) <<PK>>
+  --
+  nombre_producto : varchar(255)
+  descripcion_producto : varchar(255)
+  precio_venta_producto : numeric
+  tipo_producto_id : int <<FK>>
+}
+
+entity "BicicletaVenta" as BicicletaVenta #E6F4E8 {
+  * cod_producto : varchar(255) <<PK,FK>>
+  --
+  modelo_bicicleta_id : int <<FK>>
+  meses_garantia_bici_venta : int
+}
+
+entity "Accesorio" as Accesorio #E6F4E8 {
+  * cod_producto : varchar(255) <<PK,FK>>
+  --
+  talle_accesorio : varchar(255)
+  color_accesorio : varchar(255)
+  marca_id : int <<FK>>
+  categoria_accesorio_id : int <<FK>>
+}
+
+entity "BicicletaAlquiler" as BicicletaAlquiler #E6F4E8 {
+  * nro_serie_bici_alquiler : varchar(255) <<PK>>
+  --
+  modelo_bicicleta_id : int <<FK>>
+  precio_bici_alquiler_hora : numeric
+  precio_bici_alquiler_dia : numeric
+  estado_bici_alquiler_id : int <<FK>>
+  local_id : int <<FK>>
+}
+
+entity "Repuesto" as Repuesto #E6F4E8 {
+  * cod_repuesto : varchar(255) <<PK>>
+  --
+  desc_repuesto : varchar(255)
+  compatibilidad_repuesto : varchar(255)
+  precio_repuesto : numeric
+  categoria_repuesto_id : int <<FK>>
+}
+
+
+' ===== operacion =====
+entity "Compra" as Compra #FFF2DB {
+  * nro_compra : int <<PK>>
+  --
+  local_id : int <<FK>>
+  fecha_compra : datetime2(6)
+  total_compra : numeric
+  proveedor_id : int <<FK>>
+  empleado_id : int <<FK>>
+}
+
+entity "DetalleCompra" as DetalleCompra #FFF2DB {
+  * detalle_compra_id : int <<PK>>
+  --
+  nro_compra : int <<FK>>
+  cod_producto : varchar(255) <<FK>>
+  cantidad_prod_compra : int
+  precio_unitario_prod_compra : numeric
+}
+
+entity "Venta" as Venta #FFF2DB {
+  * nro_venta : int <<PK>>
+  --
+  fecha_hora_venta : datetime2(6)
+  total_venta : numeric
+  cliente_id : int <<FK>>
+  empleado_id : int <<FK>>
+  forma_pago_id : int <<FK>>
+  local_id : int <<FK>>
+}
+
+entity "DetalleVenta" as DetalleVenta #FFF2DB {
+  * detalle_venta_id : int <<PK>>
+  --
+  nro_venta : int <<FK>>
+  cod_producto : varchar(255) <<FK>>
+  cantidad_prod_venta : int
+  precio_unitario_prod_venta : numeric
+  subtotal_prod_venta : numeric
+}
+
+entity "Alquiler" as Alquiler #FFF2DB {
+  * nro_alquiler : int <<PK>>
+  --
+  fecha_inicio_alquiler : datetime2(6)
+  fecha_fin_pactada_alquiler : datetime2(6)
+  fecha_devolucion_real_alquiler : datetime2(6)
+  importe_total_alquiler : numeric
+  cliente_id : int <<FK>>
+  empleado_id : int <<FK>>
+  nro_serie_bici_alquiler : varchar(255) <<FK>>
+  forma_pago_id : int <<FK>>
+  estado_alquiler_id : int <<FK>>
+}
+
+entity "Reparacion" as Reparacion #FFF2DB {
+  * nro_reparacion : int <<PK>>
+  --
+  numero_serie_bici_reparacion : varchar(255)
+  fecha_ingreso_reparacion : datetime2(6)
+  fecha_entrega_estimada_reparacion : datetime2(6)
+  fecha_entrega_real_reparacion : datetime2(6)
+  diagnostico_reparacion : varchar(255)
+  precio_mano_obra_reparacion : numeric
+  precio_repuestos_reparacion : numeric
+  precio_total_reparacion : numeric
+  local_id : int <<FK>>
+  cliente_id : int <<FK>>
+  empleado_id : int <<FK>>
+  modelo_bicicleta_id : int <<FK>>
+  estado_reparacion_id : int <<FK>>
+}
+
+entity "DetalleReparacion" as DetalleReparacion #FFF2DB {
+  * detalle_reparacion_id : int <<PK>>
+  --
+  nro_reparacion : int <<FK>>
+  cod_repuesto : varchar(255) <<FK>>
+  cantidad_repuesto : int
+  precio_unitario_repuesto : numeric
+  subtotal_repuesto : numeric
+}
+
+' ===== Relaciones =====
+' Nivel 1-2: Localidad arriba de las personas/locales
+Localidad ||--o{ Proveedor
+Localidad ||--o{ Empleado
+Localidad ||--o{ Cliente
+Localidad ||--o{ Local
+
+' Nivel 3: operaciones (cabeceras)
+Proveedor ||--o{ Compra
+Empleado ||--o{ Compra
+Empleado ||--o{ Venta
+Empleado ||--o{ Alquiler
+Empleado ||--o{ Reparacion
+Cliente ||--o{ Venta
+Cliente ||--o{ Alquiler
+Cliente ||--o{ Reparacion
+Local ||--o{ Compra
+Local ||--o{ Venta
+Local ||--o{ Reparacion
+Local ||--o{ BicicletaAlquiler
+
+' Orden horizontal de las cabeceras
+Compra -[hidden]right- Venta
+Venta -[hidden]right- Alquiler
+Alquiler -[hidden]right- Reparacion
+
+' Catálogos al costado de quien los usa
+Venta }o--|| FormaPago
+Alquiler }o--|| FormaPago
+Reparacion }o-right-|| EstadoReparacion
+Alquiler }o-right-|| EstadoAlquiler
+
+' Flota de alquiler
+BicicletaAlquiler ||--o{ Alquiler
+EstadoBicicletaAlquiler ||-right-o{ BicicletaAlquiler
+
+' Nivel 4: detalles
+Compra ||--|{ DetalleCompra
+Venta ||--|{ DetalleVenta
+Reparacion ||--|{ DetalleReparacion
+
+' Nivel 5: productos debajo de los detalles
+DetalleCompra }o--|| Producto
+DetalleVenta }o--|| Producto
+DetalleReparacion }o--|| Repuesto
+Repuesto }o-right-|| CategoriaRepuesto
+Producto }o-left-|| TipoProducto
+
+' Nivel 6: subtipos de producto
+Producto ||--o| BicicletaVenta
+Producto ||--o| Accesorio
+
+' Modelo y sus catálogos
+BicicletaVenta }o--|| ModeloBicicleta
+BicicletaAlquiler }o--|| ModeloBicicleta
+Reparacion }o--|| ModeloBicicleta
+ModeloBicicleta }o--|| Marca
+ModeloBicicleta }o--|| CategoriaBicicleta
+Accesorio }o--|| Marca
+Accesorio }o-right-|| CategoriaAccesorio
+
+note bottom of DetalleCompra
+  No se almacena subtotal:
+  Maestra no contiene
+  Detalle_Compra_Subtotal_Prod_Compra.
+  Se calcula como cantidad × precio unitario.
+end note
+
+@enduml
