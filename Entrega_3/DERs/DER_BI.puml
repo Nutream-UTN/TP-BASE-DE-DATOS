@@ -1,0 +1,189 @@
+@startuml
+title DER de Inteligencia de Negocios - Bicicletería (borrador)
+hide circle
+skinparam linetype ortho
+skinparam shadowing false
+skinparam entity {
+  BackgroundColor #FEFEFE
+  BorderColor #375A7F
+}
+
+package "Dimensiones" {
+  entity "BI_DimTiempo" as BI_DimTiempo {
+    * fecha_key : int <<PK>>
+    --
+    fecha : date
+    anio : int
+    trimestre : int
+    mes : int
+    nombre_mes : varchar(20)
+  }
+
+  entity "BI_DimLocal" as BI_DimLocal {
+    * local_key : int <<PK>>
+    --
+    local_id_origen : int <<UQ>>
+    nombre_local : varchar(255)
+    localidad : varchar(255)
+    provincia : varchar(255)
+  }
+
+  entity "BI_DimRangoEtario" as BI_DimRangoEtario {
+    * rango_etario_key : int <<PK>>
+    --
+    nombre_rango : varchar(50)
+    edad_desde : int
+    edad_hasta : int <<NULL>>
+  }
+
+  entity "BI_DimTipoProducto" as BI_DimTipoProducto {
+    * tipo_producto_key : int <<PK>>
+    --
+    tipo_producto_id_origen : int <<UQ>>
+    nombre_tipo_producto : varchar(255)
+  }
+
+  entity "BI_DimCategoriaBicicleta" as BI_DimCategoriaBicicleta {
+    * categoria_bicicleta_key : int <<PK>>
+    --
+    categoria_bicicleta_id_origen : int <<UQ>>
+    nombre_categoria : varchar(255)
+  }
+
+  entity "BI_DimCategoriaRepuesto" as BI_DimCategoriaRepuesto {
+    * categoria_repuesto_key : int <<PK>>
+    --
+    categoria_repuesto_id_origen : int <<UQ>>
+    nombre_categoria : varchar(255)
+  }
+
+  entity "BI_DimTipoIngresoReparacion" as BI_DimTipoIngresoReparacion {
+    * tipo_ingreso_key : int <<PK>>
+    --
+    nombre_tipo_ingreso : varchar(30)
+  }
+}
+
+package "Hechos" {
+  entity "BI_FactVenta" as BI_FactVenta {
+    * nro_venta : int <<PK>>
+    --
+    fecha_venta_key : int <<FK>>
+    local_key : int <<FK>>
+    importe_total_venta : numeric(38,2)
+    cantidad_ventas : int
+  }
+
+  entity "BI_FactVentaTipoProducto" as BI_FactVentaTipoProducto {
+    * nro_venta : int <<PK>>
+    * tipo_producto_key : int <<PK,FK>>
+    --
+    fecha_venta_key : int <<FK>>
+    local_key : int <<FK>>
+    rango_etario_key : int <<FK>>
+    importe_tipo_producto_en_venta : numeric(38,2)
+    unidades_vendidas : int
+  }
+
+  entity "BI_FactAlquiler" as BI_FactAlquiler {
+    * nro_alquiler : int <<PK>>
+    --
+    fecha_inicio_key : int <<FK>>
+    local_key : int <<FK>>
+    categoria_bicicleta_key : int <<FK>>
+    horas_alquiler : numeric(10,2) <<NULL>>
+    importe_total_alquiler : numeric(38,2)
+    cantidad_alquileres : int
+  }
+
+  entity "BI_FactReparacion" as BI_FactReparacion {
+    * nro_reparacion : int <<PK>>
+    --
+    fecha_entrega_real_key : int <<FK>>
+    local_key : int <<FK>>
+    desvio_entrega_dias : int
+  }
+
+  entity "BI_FactRepuestoUsado" as BI_FactRepuestoUsado {
+    * detalle_reparacion_id : int <<PK>>
+    --
+    fecha_reparacion_key : int <<FK>>
+    local_key : int <<FK>>
+    categoria_repuesto_key : int <<FK>>
+    unidades_utilizadas : int
+  }
+
+  entity "BI_FactIngresoReparacion" as BI_FactIngresoReparacion {
+    * nro_reparacion : int <<PK>>
+    * tipo_ingreso_key : int <<PK,FK>>
+    --
+    fecha_entrega_real_key : int <<FK>>
+    local_key : int <<FK>>
+    importe_ingreso : numeric(38,2)
+  }
+
+  entity "BI_FactCompra" as BI_FactCompra {
+    * nro_compra : int <<PK>>
+    --
+    fecha_compra_key : int <<FK>>
+    local_key : int <<FK>>
+    importe_total_compra : numeric(38,2)
+    cantidad_compras : int
+  }
+
+  entity "BI_FactCompraTipoProducto" as BI_FactCompraTipoProducto {
+    * nro_compra : int <<PK>>
+    * tipo_producto_key : int <<PK,FK>>
+    --
+    fecha_compra_key : int <<FK>>
+    local_key : int <<FK>>
+    unidades_compradas : int
+  }
+}
+
+BI_DimTiempo ||--o{ BI_FactVenta 
+BI_DimLocal ||--o{ BI_FactVenta
+BI_DimTiempo ||--o{ BI_FactVentaTipoProducto 
+BI_DimLocal ||--o{ BI_FactVentaTipoProducto
+BI_DimRangoEtario ||--o{ BI_FactVentaTipoProducto
+BI_DimTipoProducto ||--o{ BI_FactVentaTipoProducto
+
+BI_DimTiempo ||--o{ BI_FactAlquiler 
+BI_DimLocal ||--o{ BI_FactAlquiler
+BI_DimCategoriaBicicleta ||--o{ BI_FactAlquiler
+
+BI_DimTiempo ||--o{ BI_FactReparacion 
+BI_DimLocal ||--o{ BI_FactReparacion
+BI_DimTiempo ||--o{ BI_FactRepuestoUsado 
+BI_DimLocal ||--o{ BI_FactRepuestoUsado
+BI_DimCategoriaRepuesto ||--o{ BI_FactRepuestoUsado
+BI_DimTiempo ||--o{ BI_FactIngresoReparacion 
+BI_DimLocal ||--o{ BI_FactIngresoReparacion
+BI_DimTipoIngresoReparacion ||--o{ BI_FactIngresoReparacion
+
+BI_DimLocal ||--o{ BI_FactCompra
+BI_DimTiempo ||--o{ BI_FactCompraTipoProducto 
+BI_DimLocal ||--o{ BI_FactCompraTipoProducto
+BI_DimTipoProducto ||--o{ BI_FactCompraTipoProducto
+
+
+
+note bottom of BI_FactVentaTipoProducto
+  Grano: una fila por venta y tipo de producto.
+  El indicador 2 promedia el importe de ese tipo
+  dentro de cada venta, por mes y rango etario.
+end note
+
+note bottom of BI_FactCompraTipoProducto
+  Grano: una fila por compra y tipo de producto.
+  El indicador 9 promedia las unidades de ese tipo
+  por compra, agrupadas por trimestre.
+end note
+
+note bottom of BI_FactAlquiler
+  La duración usa la fecha de devolución real.
+  Si todavía no se registró la devolución, las horas
+  quedan NULL y no entran en el promedio.
+end note
+
+@enduml
